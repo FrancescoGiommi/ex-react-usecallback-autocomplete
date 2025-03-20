@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 /* Premessa: Stai sviluppando un campo di ricerca intelligente simile a quello di Amazon.
@@ -19,9 +19,64 @@ import "./App.css";
 
 Obiettivo: Mostrare suggerimenti dinamici in base alla ricerca dell'utente. */
 function App() {
-  const [count, setCount] = useState(0);
+  const [query, setQuery] = useState("");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  return <></>;
+  useEffect(() => {
+    if (!query.trim()) {
+      setProducts([]);
+      return;
+    }
+    fetch(
+      `https://boolean-spec-frontend.vercel.app/freetestapi/products?search=${query}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setProducts(data);
+      })
+      .catch((err) => console.error(err));
+  }, [query]);
+
+  return (
+    <>
+      <div>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Ricerca qualcosa..."
+        />
+        {products.length > 0 && (
+          <div>
+            {products.map((product, i) => (
+              <p key={i}>{product.name}</p>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
 }
 
 export default App;
+// brand: "Samsung"
+// ​​
+// color: "Blue"
+// ​​
+// description: "Fast and compact external SSD for data storage and transfer."
+// ​​
+// id: 10
+// ​​
+// image: "https://fakeimg.pl/500x500/3399ff"
+// ​​
+// interface: "USB 3.2 Gen 2"
+// ​​
+// name: "Portable External SSD"
+// ​​
+// price: 149.99
+// ​​
+// rating: 4.8
+// ​​
+// storage_capacity: "500GB"
